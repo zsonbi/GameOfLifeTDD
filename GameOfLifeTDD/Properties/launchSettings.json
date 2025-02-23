@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GameOfLifeTDD": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
