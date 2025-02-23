@@ -167,14 +167,14 @@ namespace Tests
         public async Task GameRunTest1()
         {
             Game game = new Game();
-            List<(int, int)> cells = new List<(int, int)>() { (3, 3), (2, 2) };
+            List<(int, int)> cells = new List<(int, int)>() { (3, 3), (2, 2), (3,2) };
             game.SetCells(cells);
 
             await game.Run(10);
             Assert.True(game.GetCell(2, 2));
             Assert.True(game.GetCell(3, 3));
-            Assert.False(game.GetCell(2, 3));
-            Assert.False(game.GetCell(3, 2));
+            Assert.True(game.GetCell(2, 3));
+            Assert.True(game.GetCell(3, 2));
         }
 
         [Fact]

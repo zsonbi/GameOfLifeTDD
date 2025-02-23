@@ -63,7 +63,7 @@ namespace GameOfLifeTDD.GameOfLife
                     generationCount--;
                 }
 
-
+                 Tick();
 
                 if (animate)
                 {
@@ -258,6 +258,7 @@ namespace GameOfLifeTDD.GameOfLife
                             num = "";
                         }
                     }
+                    num="";
                     rowIndex++;
                 }
 
@@ -265,7 +266,7 @@ namespace GameOfLifeTDD.GameOfLife
                 this.BirthAmount = birthAmounts.Count == 0 ? this.BirthAmount : birthAmounts;
                 this.matrix = readInBoard;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Console.WriteLine("Can't import file: " + filePath);
             }

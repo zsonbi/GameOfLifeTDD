@@ -62,6 +62,18 @@ namespace Tests
             Assert.True(game.GetCell(0, 24));
         }
 
+        [Fact]
+        public async Task ReadInBHeptamino()
+        {
+            Game game = new Game();
+
+            await game.ImportRLEFile("./TestData/bheptomino-t148.rle");
+            Assert.Equal(50, game.Height);
+            Assert.Equal(61, game.Width);
+            Assert.True(game.GetCell(0, 59));
+        }
+
+
 
         [Fact]
         public async Task ReadInGliderAlteredRuleTest()
