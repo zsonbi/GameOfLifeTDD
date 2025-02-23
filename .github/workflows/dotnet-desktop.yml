@@ -3,11 +3,11 @@ name: .NET Unit Tests
 on:
   push:
     branches:
-      - main
+      - master
       - ci/cd
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   test:
