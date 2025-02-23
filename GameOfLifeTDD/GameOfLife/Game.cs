@@ -124,6 +124,70 @@ namespace GameOfLifeTDD.GameOfLife
             this.matrix = new bool[Height, Width];
         }
 
+        public string ExportRLEBoardState()
+        {
+            string sizes = $"x = {Width}, y = {Height}, rule = B{String.Concat( BirthAmount)}/S{String.Concat(SurvivalAmount)}";
+            string boardState = "";
+            int counter = 0;
+            char lastChar = '\0';
+            for (int i = 0; i < Height; i++)
+            {
+                for (int j = 0; j < Width; j++)
+                {
+                    if (counter == 0)
+                    {
+                        lastChar = matrix[i, j] ? 'o' : 'b';
+                        counter = 1;
+                    }
+                    else
+                    {
+                        if (matrix[i, j] && lastChar == 'o' || !matrix[i, j] && lastChar == 'b')
+                        {
+                            counter++;
+                        }
+                        else if (lastChar == '\0')
+                        {
+                            lastChar = matrix[i, j] ? 'o' : 'b';
+                            counter = 1;
+                        }
+                        else
+                        {
+                            if (counter == 1)
+                            {
+                                boardState += lastChar;
+                            }
+                            else
+                            {
+                                boardState += $"{counter}{lastChar}";
+                            }
+                            counter = 1;
+                            lastChar = matrix[i,j] ? 'o': 'b';
+                        }
+                    }
+                }
+                if (counter == 1)
+                {
+                    boardState += lastChar;
+                }
+                //Skip trailing dead cells
+                else if (counter != 0 && (lastChar != 'b' || i <Height-1))
+                {
+                    boardState += $"{counter}{lastChar}";
+                }
+                counter = 0;
+                lastChar = '\0';
+                boardState+="$";
+            }
+            boardState = boardState.Trim('$')+ "!";
+            string[] splittedBoard = new string[boardState.Length / 70+1];
+            for (int i = 0; i<= boardState.Length / 70; i++)
+            {
+                splittedBoard[i]=boardState.Substring(i*70,Math.Min(boardState.Length-70*i,70));
+            }
+
+            return sizes + "\n" + String.Join('\n',splittedBoard );
+        }
+
         public async Task ImportRLEFile(string filePath)
         {
             try
@@ -148,10 +212,10 @@ namespace GameOfLifeTDD.GameOfLife
 
                         if (splitted.Length >= 3)
                         {
-                            string[] rules = splitted[3].Split("/").Select(x=>x.Trim()).ToArray();
+                            string[] rules = splitted[3].Split("/").Select(x => x.Trim()).ToArray();
                             for (int i = 1; i < rules[0].Length; i++)
                             {
-                                birthAmounts.Add(rules[0][i] -'0');
+                                birthAmounts.Add(rules[0][i] - '0');
                             }
                             for (int i = 1; i < rules[1].Length; i++)
                             {
@@ -196,7 +260,7 @@ namespace GameOfLifeTDD.GameOfLife
                     }
                     rowIndex++;
                 }
-                
+
                 this.SurvivalAmount = survivalAmounts.Count == 0 ? this.SurvivalAmount : survivalAmounts;
                 this.BirthAmount = birthAmounts.Count == 0 ? this.BirthAmount : birthAmounts;
                 this.matrix = readInBoard;
