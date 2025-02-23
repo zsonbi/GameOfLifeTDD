@@ -20,7 +20,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0' # Adjust to your project's .NET version
+          dotnet-version: '8.0.x' # Adjust to your project's .NET version
 
       - name: Restore dependencies
         run: dotnet restore
@@ -28,5 +28,10 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
 
-      - name: Run tests
-        run: dotnet test --no-build --verbosity normal
+      - name: Run tests with coverage
+        run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/**/coverage.cobertura.xml
