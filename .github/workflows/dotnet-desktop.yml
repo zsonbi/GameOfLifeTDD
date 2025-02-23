@@ -22,15 +22,8 @@ jobs:
         with:
           dotnet-version: '8.0.x' # Adjust to your project's .NET version
 
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore
       - name: "Restore/Build/Test"
         run: dotnet test --configuration Release --verbosity normal --logger trx --collect:"XPlat Code Coverage"
-#      - name: Run tests with coverage
-#        run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat="cobertura,opencover" /p:CoverletOutput="./coverage/coverage"
       - name: Combine Coverage Reports # This is because one report is produced per project, and we want one result for all of them.
         uses: danielpalme/ReportGenerator-GitHub-Action@5.2.4
         with:
@@ -61,3 +54,21 @@ jobs:
           indicators: true
           output: both
           thresholds: "10 30"
+
+      # Install ReportGenerator tool
+      - name: Install ReportGenerator
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          echo "$(dotnet --list-sdks)"
+      
+      # Generate HTML report from the TRX report
+      - name: Generate HTML coverage report
+        run: |
+          reportgenerator "-reports:**/*.cobertura.xml" "-targetdir:coverage-report" -reporttypes:Html
+      
+      # Upload HTML report as an artifact
+      - name: Upload coverage report as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: coverage-report/index.html
