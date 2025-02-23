@@ -9,9 +9,12 @@ namespace GameOfLifeTDD.GameOfLife
 {
     public class Game
     {
+        private bool[,] matrix;
+        public List<int> SurvivalAmount = new List<int>() { 2, 3 };
+        public List<int> BirthAmount = new List<int>() { 3 };
+
         public const int DEFAULT_WIDTH = 16;
         public const int DEFAULT_HEIGHT = 16;
-        private bool[,] matrix;
 
         public int Height => matrix.GetLength(0);
         public int Width => matrix.GetLength(1);
@@ -80,11 +83,11 @@ namespace GameOfLifeTDD.GameOfLife
                     int neighbourCount = NeighbourCount(i, j);
                     if (matrix[i, j])
                     {
-                        newBoard[i,j]= neighbourCount ==2 || neighbourCount ==3;
+                        newBoard[i, j] = SurvivalAmount.Contains(neighbourCount);
                     }
                     else
                     {
-                        newBoard[i, j] = neighbourCount == 3;
+                        newBoard[i, j] = BirthAmount.Contains(neighbourCount);
                     }
                 }
             }
@@ -118,16 +121,90 @@ namespace GameOfLifeTDD.GameOfLife
 
         public void ClearBoard()
         {
-            this.matrix = new bool[Height,Width];
+            this.matrix = new bool[Height, Width];
         }
 
-        public void ImportRLEFile(string filePath)
+        public async Task ImportRLEFile(string filePath)
         {
-            string fileContent= File.ReadAllText(filePath, Encoding.UTF8);
+            try
+            {
+                string[] fileContent = await File.ReadAllLinesAsync(filePath, Encoding.UTF8);
+                bool[,]? readInBoard = null;
+                string board = "";
+                List<int> survivalAmounts = new List<int>();
+                List<int> birthAmounts = new List<int>();
+                foreach (string line in fileContent)
+                {
+                    if (line.StartsWith('#'))
+                    {
+                        continue;
+                    }
 
+                    if (line.StartsWith('x'))
+                    {
+                        string[] splitted = line.Split("=");
+                        int width = int.Parse(splitted[1].Split(',')[0]);
+                        int height = int.Parse(splitted[2].Split(',')[0]);
 
+                        if (splitted.Length >= 3)
+                        {
+                            string[] rules = splitted[3].Split("/");
+                            for (int i = 1; i < rules[0].Length; i++)
+                            {
+                                birthAmounts.Add(Convert.ToInt32(rules[0][i]));
+                            }
+                            for (int i = 1; i < rules[1].Length; i++)
+                            {
+                                survivalAmounts.Add(Convert.ToInt32(rules[1][i]));
+                            }
+                        }
+                        readInBoard = new bool[height, width];
+                    }
+                    else
+                    {
+                        board += line;
+                    }
+                }
+                if (readInBoard is null)
+                {
+                    throw new Exception("Can't create no boardsize was specified in file");
+                }
+                string[] rows = board.Trim('!').Split("$");
+                string num = "";
+                int colIndex = 0;
+                int rowIndex = 0;
+                foreach (string row in rows)
+                {
+                    colIndex = 0;
 
-
+                    foreach (char character in row)
+                    {
+                        if (character <= '9' && character >= '0')
+                        {
+                            num += character;
+                        }
+                        else
+                        {
+                            int occurence = num == "" ? 1 : int.Parse(num);
+                            for (int i = 0; i < occurence; i++)
+                            {
+                                readInBoard[rowIndex, colIndex] = 'o' == character;
+                                colIndex++;
+                            }
+                            num = "";
+                        }
+                    }
+                    rowIndex++;
+                }
+                
+                this.SurvivalAmount = survivalAmounts.Count == 0 ? this.SurvivalAmount : survivalAmounts;
+                this.BirthAmount = birthAmounts.Count == 0 ? this.BirthAmount : birthAmounts;
+                this.matrix = readInBoard;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Can't import file: " + filePath);
+            }
         }
     }
 }
