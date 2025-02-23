@@ -8,32 +8,38 @@ using System.Threading.Tasks;
 
 namespace Tests
 {
-    internal class ProgramTests
+    public class ProgramTests
     {
-
+        [Fact]
         public async Task TestNotEnoughParameters()
         {
             var stringWriter = new StringWriter();
+            await stringWriter.FlushAsync();
             Console.SetOut(stringWriter);
             await GameOfLifeTDD.Program.Main(new string[] { "./TestData/bheptomino-t148.rle" });
-            Console.SetOut(stringWriter);
-            await GameOfLifeTDD.Program.Main(new string[] { "100" });
             string output = stringWriter.ToString().Trim();
             Assert.Equal("Please give path and generation count", output);
         }
 
+        [Fact]
         public async Task TestNotEnoughParameters2()
         {
             var stringWriter = new StringWriter();
+            await stringWriter.FlushAsync();
             Console.SetOut(stringWriter); 
             await GameOfLifeTDD.Program.Main(new string[] { "100" });
             string output = stringWriter.ToString().Trim();
             Assert.Equal("Please give path and generation count",output);
         }
-
+        [Fact]
         public async Task TestInvalidFilePath()
         {
-          await Assert.ThrowsAsync<ArgumentException>( async ()=> await GameOfLifeTDD.Program.Main(new string[] { "./TestData/bheptomino-t148.rle1","100" }));
+            var stringWriter = new StringWriter();
+            await stringWriter.FlushAsync();
+            Console.SetOut(stringWriter);
+            await GameOfLifeTDD.Program.Main(new string[] { "./TestData/bheptomino-t148.rle_notexisting","100" });
+            string output = stringWriter.ToString().Trim();
+            Assert.Contains("Can't import file:", output);
         }
     }
 }
