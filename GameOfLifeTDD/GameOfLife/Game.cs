@@ -148,14 +148,14 @@ namespace GameOfLifeTDD.GameOfLife
 
                         if (splitted.Length >= 3)
                         {
-                            string[] rules = splitted[3].Split("/");
+                            string[] rules = splitted[3].Split("/").Select(x=>x.Trim()).ToArray();
                             for (int i = 1; i < rules[0].Length; i++)
                             {
-                                birthAmounts.Add(Convert.ToInt32(rules[0][i]));
+                                birthAmounts.Add(rules[0][i] -'0');
                             }
                             for (int i = 1; i < rules[1].Length; i++)
                             {
-                                survivalAmounts.Add(Convert.ToInt32(rules[1][i]));
+                                survivalAmounts.Add(rules[1][i] - '0');
                             }
                         }
                         readInBoard = new bool[height, width];
