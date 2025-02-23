@@ -20,7 +20,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x' # Adjust to your project's .NET version
+          dotnet-version: '8.0' # Adjust to your project's .NET version
 
       - name: Restore dependencies
         run: dotnet restore
@@ -28,15 +28,5 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
 
-      - name: Run tests with coverage
-        run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage"
-
-      - name: Convert coverage to lcov
-        run: |
-          dotnet tool install --global coverlet.console
-          coverlet ./tests/**/bin/**/*.dll --target "dotnet" --targetargs "test --no-build" --format lcov
-
-      - name: Upload coverage report
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage.lcov
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
