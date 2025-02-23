@@ -28,8 +28,13 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
 
-      - name: Run tests with coverage
-        run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat="cobertura,opencover" /p:CoverletOutput="./coverage/coverage"
+#      - name: Run tests with coverage
+#        run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat="cobertura,opencover" /p:CoverletOutput="./coverage/coverage"
+
+      - name: Dotnet Test Coverlet
+        uses: alsi-lawr/dotnet-test-coverlet@v1
+        with:
+          dotnet-version: 8.0
         
       - name: Upload coverage report
         uses: codecov/codecov-action@v3
