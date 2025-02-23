@@ -30,12 +30,14 @@ jobs:
 
 #      - name: Run tests with coverage
 #        run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat="cobertura,opencover" /p:CoverletOutput="./coverage/coverage"
-
-      - name: Dotnet Test Coverlet
-        uses: alsi-lawr/dotnet-test-coverlet@v1
+      - name: dotnet test
+        uses: bibipkins/dotnet-test-reporter@v1.4.0
         with:
-          dotnet-version: 8.0
-        
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comment-title: 'Unit Test Results'
+          results-path: ./TestResults/*.trx
+          coverage-path: ./TestResults/coverage.xml
+          coverage-threshold: 80
       - name: Upload coverage report
         uses: codecov/codecov-action@v3
         with:
